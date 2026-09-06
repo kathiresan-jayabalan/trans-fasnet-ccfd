@@ -42,11 +42,12 @@ Each sequence contains 8 consecutive transactions. The label assigned to a seque
 Install the required dependencies:
 ```bash
 pip install -r requirements.txt
-
+```
 Train the model:
 ```bash
 python src/train.py --data-path data/creditcard.csv --output-dir outputs
-
+```
 Evaluate the trained model:
 ```bash
 python src/evaluate.py --data-path data/creditcard.csv --checkpoint outputs/best_model.pt
+```
