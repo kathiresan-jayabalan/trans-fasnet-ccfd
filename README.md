@@ -4,6 +4,8 @@ This repository contains a baseline implementation of TransFASNet for binary cre
 
 The model uses a single Transformer encoder to process fixed-length transaction windows. During pretraining, two augmented views of each transaction window are used for contrastive learning, together with an auxiliary next-step prediction task. The pretrained model is then fine-tuned for fraud classification.
 
+- **Authors:** Kathiresan Jayabalan, Sethuraman Radhakrishnan
+
 ## Model
 
 - Input: Transaction windows of length 8
