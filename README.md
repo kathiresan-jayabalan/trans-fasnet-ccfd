@@ -53,3 +53,11 @@ Evaluate the trained model:
 ```bash
 python src/evaluate.py --data-path data/creditcard.csv --checkpoint outputs/best_model.pt
 ```
+
+## Output
+Training writes outputs/best_model.pt and outputs/training_summary.json. Evaluation writes test_metrics.json with precision, recall, F1, average precision, ROC-AUC, and a confusion matrix for the fraud class.
+
+## Status
+This is a baseline implementation. It does not include spatial-feature attention or gated fusion. Those components are implemented in separate repositories:
+- STTN-CP: https://github.com/kathiresan-jayabalan/sttn-cp-ccfd
+- C-STEN: https://github.com/kathiresan-jayabalan/c-sten-ccfd
