@@ -5,8 +5,46 @@ This repository contains a baseline implementation of TransFASNet for binary cre
 The model uses a single Transformer encoder to process fixed-length transaction windows. Pretraining combines two objectives: an NT-Xent contrastive loss between two augmented views of each window and an auxiliary loss that forecasts the transaction immediately following the window. That forecast target comes from outside the window, so the encoder can't just copy it from its own input. Fine-tuning then trains the pretrained encoder for fraud classification with cross-entropy loss, using BorderlineSMOTE on the training partition to handle class imbalance.
 
 - **Authors:** Kathiresan Jayabalan, Sethuraman Radhakrishnan
-  
-## Model
+
+## Originality & Novelty 
+
+This implementation adapts contrastive self-supervised pretraining (NT-Xent / InfoNCE) to tabular financial transaction sequences, a technique typically restricted to computer vision (SimCLR, MoCo) and natural language processing. The model learns fraud-discriminative representations from unlabeled transaction windows prior to supervised fine-tuning on the imbalanced label set.
+
+## Model Architecture
+
+The model processes input tensors of shape $(B, T=8, D=30)$ through a single Transformer encoder that attends across the temporal dimension.
+
+```
+Input (B, T=8, D=30)
+    │
+    ▼
+Linear(D → embed_dim=128)          ← project each timestep to embedding space
+    │
+PositionalEncoding (sinusoidal)
+    │
+TransformerEncoder                 ← 3 layers, 4 heads, GELU, d_ff=256
+  [MultiheadAttention + FFN] × 3   ← attends across T timestep tokens
+    │
+mean pool over T
+    │
+    z  (B, 128)
+   /│\
+  / │ \
+ ▼  ▼  ▼
+proj  temporal  classifier
+head   head
+(NT-Xent) (MSE)  (CrossEntropy)
+```
+
+- **Input Projection:** Maps raw feature dimensions to the transformer embedding space.
+- **Positional Encoding:** Adds sinusoidal sequence order information.
+- **Shared Transformer Encoder:** Aggregates temporal context using multi-head self-attention across the $T$ timesteps.
+- **Multi-Task Heads:** 
+  - *Projection Head:* Optimizes NT-Xent contrastive loss between augmented views.
+  - *Temporal Head:* Optimizes mean-squared error (MSE) for next-step transaction forecasting.
+  - *Classifier Head:* Outputs binary fraud logits using cross-entropy.
+
+## Model Hyperparameters
 
 - Input: transaction windows of length 8 (configurable)
 - Encoder: 3-layer Transformer with 4 attention heads (configurable)
@@ -60,7 +98,7 @@ pip install -r requirements.txt
 python -m pytest tests/ -v
 ```
 
-The suite covers chronological splitting and scaling, window and forecasting-target construction, model output shapes, the NT-Xent loss (including a gradient-flow check), and an end-to-end run of `train.py` followed by `evaluate.py` on a dataset.
+The suite covers random stratified splitting and scaling, window and forecasting-target construction, model output shapes, the NT-Xent loss (including a gradient-flow check) and an end-to-end run of train.py followed by evaluate.py on a dataset.
 
 ## Output
 Training writes outputs/best_transfas_net.pth and outputs/training_summary.json. Evaluation writes outputs/test_metrics.json with precision, recall, F1, average precision, ROC-AUC, and a confusion matrix for the fraud class.
@@ -77,6 +115,4 @@ See [`results/README.md`](results/README.md) for the full training log, structur
 | ROC AUC | 0.9473 |
 
 ## Status
-This is a baseline implementation. It does not include spatial-feature attention or gated fusion. Those components are implemented in separate repositories:
-- STTN-CP: https://github.com/kathiresan-jayabalan/sttn-cp-ccfd
-- C-STEN: https://github.com/kathiresan-jayabalan/c-sten-ccfd
+[kathiresan-jayabalan/trans-fasnet-ccfd](https://github.com/kathiresan-jayabalan/trans-fasnet-ccfd) is a baseline implementation. It does not include spatial-feature attention or gated fusion. Because a single encoder attends over the $T$ timestep dimension treating each transaction vector as an opaque point, this baseline cannot separately isolate spatial feature anomalies from temporal pattern anomalies. That specific architectural limitation is resolved in follow-up systems, which are implemented in separate repositories: [kathiresan-jayabalan/sttn-cp-ccfd](https://github.com/kathiresan-jayabalan/sttn-cp-ccfd) and [kathiresan-jayabalan/c-sten-ccfd](https://github.com/kathiresan-jayabalan/c-sten-ccfd).
