@@ -2,7 +2,7 @@
 
 This repository contains a baseline implementation of TransFASNet for binary credit card fraud classification.
 
-The model uses a single Transformer encoder to process fixed-length transaction windows. Pretraining combines two objectives: an NT-Xent contrastive loss between two augmented views of each window and an auxiliary loss that forecasts the transaction immediately following the window. That forecast target comes from outside the window, so the encoder can't just copy it from its own input. Fine-tuning then trains the pretrained encoder for fraud classification with class-weighted cross-entropy loss.
+The model uses a single Transformer encoder to process fixed-length transaction windows. Pretraining combines two objectives: an NT-Xent contrastive loss between two augmented views of each window and an auxiliary loss that forecasts the transaction immediately following the window. That forecast target comes from outside the window, so the encoder can't just copy it from its own input. Fine-tuning then trains the pretrained encoder for fraud classification with cross-entropy loss, using BorderlineSMOTE on the training partition to handle class imbalance.
 
 - **Authors:** Kathiresan Jayabalan, Sethuraman Radhakrishnan
   
@@ -12,7 +12,7 @@ The model uses a single Transformer encoder to process fixed-length transaction 
 - Encoder: 3-layer Transformer with 4 attention heads (configurable)
 - Embedding size: 128 (configurable)
 - Pretraining: NT-Xent contrastive loss plus a mean-squared-error forecasting loss against the next real transaction
-- Fine-tuning: class-weighted cross-entropy for binary fraud classification, with an F1-optimal decision threshold selected on the validation partition each epoch
+- Fine-tuning: cross-entropy loss for binary fraud classification on oversampled data
 
 ## Data
 
@@ -25,25 +25,14 @@ The project uses the Kaggle Credit Card Fraud Detection dataset.
 
 Download the dataset and place it at `data/creditcard.csv`.
 
-## Data split
+## Data Split & Preprocessing
 
-Records are sorted by `Time` before splitting.
+- **Split Protocol:** Random stratified 80/10/10 split (80% training, 10% validation, 10% test) preserving the class distribution across partitions.
+- **Scaling:** `MinMaxScaler` is applied to the numeric feature matrix.
+- **Class Balancing:** `BorderlineSMOTE` (kind='borderline-1') is applied exclusively to the training partition to address class imbalance prior to fine-tuning.
+- **Pretraining Windows:** Sliding windows for contrastive and temporal pretraining are constructed from the dataset.
 
-- Training: first 70%
-- Validation: next 10%
-- Test: final 20%
-
-`MinMaxScaler` is fit on the training partition only and applied unchanged to validation and test.
-
-## Handling the `Time` column
-
-A chronological split means every validation and test timestamp is larger than any timestamp seen while fitting the scaler, so the raw `Time` column can fall outside the training scaler's range at evaluation time. `--time-feature` controls this:
-
-- `delta` (default): replace `Time` with the gap since the previous transaction. This is roughly stationary, so validation/test values stay close to the range seen during training.
-- `drop`: remove `Time` entirely.
-- `raw`: keep the original, unbounded, monotonically increasing column (not recommended; kept for comparison against earlier baselines).
-
-## Sequence label
+## Sequence Label
 
 Each labeled sequence spans `sequence_length` consecutive transactions. The label assigned to the sequence is the class of its final transaction.
 
@@ -61,34 +50,8 @@ python src/train.py --data-path data/creditcard.csv --output-dir outputs
 
 Evaluate the trained model:
 ```bash
-python src/evaluate.py --data-path data/creditcard.csv --checkpoint outputs/best_model.pt
+python src/evaluate.py --data-path data/creditcard.csv --checkpoint outputs/best_transfas_net.pth --output-file outputs/test_metrics.json
 ```
-
-Useful training flags (all optional, defaults shown):
-```bash
-python src/train.py \
-  --data-path data/creditcard.csv \
-  --output-dir outputs \
-  --sequence-length 8 \
-  --embedding-dim 128 \
-  --layers 3 \
-  --heads 4 \
-  --feedforward-dim 256 \
-  --projection-dim 64 \
-  --dropout 0.1 \
-  --time-feature delta \
-  --batch-size 256 \
-  --pretrain-epochs 15 \
-  --finetune-epochs 25 \
-  --learning-rate 1e-3 \
-  --temperature 0.1 \
-  --noise-std 0.02 \
-  --mask-prob 0.12 \
-  --patience 8 \
-  --seed 42
-```
-
-The checkpoint saved at `outputs/best_model.pt` stores the full model configuration alongside the weights, so `evaluate.py` reconstructs the exact same architecture without needing any flags beyond `--data-path` and `--checkpoint`.
 
 ## Tests
 
@@ -100,7 +63,7 @@ python -m pytest tests/ -v
 The suite covers chronological splitting and scaling, window and forecasting-target construction, model output shapes, the NT-Xent loss (including a gradient-flow check), and an end-to-end run of `train.py` followed by `evaluate.py` on a dataset.
 
 ## Output
-Training writes outputs/best_model.pt and outputs/training_summary.json. Evaluation writes test_metrics.json with precision, recall, F1, average precision, ROC-AUC, and a confusion matrix for the fraud class.
+Training writes outputs/best_transfas_net.pth and outputs/training_summary.json. Evaluation writes outputs/test_metrics.json with precision, recall, F1, average precision, ROC-AUC, and a confusion matrix for the fraud class.
 
 ## Results
 See [`results/README.md`](results/README.md) for the full training log, structured metrics, and executed notebook from the protocol run: 10 pretraining epochs (556 batches each, loss dropping from 4.585835 to 1.446875), 10 fine-tuning epochs (1,777 batches each) with per-epoch validation accuracy/precision/recall/F1/ROC-AUC, the checkpoint-save events and the final test block. Same way, hyperparameters (batch sizes 512/256, learning rates 3e-4/1e-4, seed 42, sequence length 8), per-epoch arrays for both pretraining loss and fine-tuning validation metrics, the best-checkpoint marker (epoch 9, F1 0.7257) and the final test metrics as shown below:
