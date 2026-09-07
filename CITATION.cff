@@ -1,0 +1,32 @@
+cff-version: 1.2.0
+message: "If you use this program, please cite it as below."
+type: software
+title: "TransFASNet-CCFD: Transformer-Based Baseline for Credit Card Fraud Detection with Contrastive Pretraining"
+version: 1.0.0
+date-released: 2026-09-07
+license: Apache-2.0
+repository-code: "https://github.com/kathiresan-jayabalan/trans-fasnet-ccfd"
+
+authors:
+  - family-names: Jayabalan
+    given-names: Kathiresan
+    affiliation: "Research Scholar, Sathyabama Institute of Science and Technology, Chennai, Tamil Nadu, India"
+    email: kathiresan.jayabalan@gmail.com
+    orcid: "https://orcid.org/0009-0006-0902-772X"
+
+  - family-names: Radhakrishnan
+    given-names: Sethuraman
+    affiliation: "Associate Professor, Sathyabama Institute of Science and Technology, Chennai, Tamil Nadu, India"
+    email: sethuraman.cse@sathyabama.ac.in
+    orcid: "https://orcid.org/0000-0001-7115-593X"
+
+keywords:
+  - credit card fraud detection
+  - deep learning
+  - transformers
+  - contrastive learning
+  - self-supervised learning
+  - financial security
+  - tabular data
+
+abstract: "A baseline implementation of TransFASNet for binary credit card fraud classification. The model utilizes a single Transformer encoder to process fixed-length transaction windows, combining an NT-Xent contrastive pretraining objective with an auxiliary next-step transaction forecasting loss. Fine-tuning employs cross-entropy loss alongside BorderlineSMOTE on the training partition to handle severe class imbalance in tabular transaction sequences."
