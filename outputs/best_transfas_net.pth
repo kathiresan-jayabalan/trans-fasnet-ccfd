@@ -1,0 +1,11 @@
+This file stands in for outputs/best_model.pt.
+
+A real best_model.pt is a binary PyTorch checkpoint produced only by
+running src/train.py against the actual creditcard.csv dataset.
+
+To generate the real file:
+
+    pip install -r requirements.txt
+    python src/train.py --data-path ./data/creditcard.csv --output-dir outputs
+
+This will overwrite this placeholder with the real outputs/best_model.pt.

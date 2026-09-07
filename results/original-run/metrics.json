@@ -1,0 +1,64 @@
+{
+  "model": "TransFASNet",
+  "protocol": "random stratified 80/10/10 split, BorderlineSMOTE on training partition, pretraining windows built from the full scaled dataset before splitting",
+  "dataset": {
+    "source": "Kaggle Credit Card Fraud Detection",
+    "rows": 284807,
+    "fraud_rows": 492,
+    "features": 30
+  },
+  "hyperparameters": {
+    "seed": 42,
+    "sequence_length": 8,
+    "embedding_dim": 128,
+    "transformer_layers": 3,
+    "num_heads": 4,
+    "mlp_dim": 256,
+    "projection_dim": 64,
+    "batch_size_pretrain": 512,
+    "batch_size_finetune": 256,
+    "pretrain_epochs": 10,
+    "finetune_epochs": 10,
+    "learning_rate_pretrain": 0.0003,
+    "learning_rate_finetune": 0.0001,
+    "contrastive_temperature": 0.1,
+    "pretraining_windows": 284800,
+    "pretrain_batches_per_epoch": 556,
+    "finetune_batches_per_epoch": 1777
+  },
+  "pretrain_loss_by_epoch": [
+    4.585835, 3.969964, 2.715191, 2.165113, 1.876932,
+    1.689963, 1.607046, 1.544997, 1.490867, 1.446875
+  ],
+  "finetune_validation_by_epoch": [
+    {"epoch": 1, "accuracy": 0.9900, "precision": 0.1308, "recall": 0.8571, "f1": 0.2270, "roc_auc": 0.9659, "saved_checkpoint": true},
+    {"epoch": 2, "accuracy": 0.9928, "precision": 0.1777, "recall": 0.8776, "f1": 0.2955, "roc_auc": 0.9648, "saved_checkpoint": true},
+    {"epoch": 3, "accuracy": 0.9969, "precision": 0.3387, "recall": 0.8571, "f1": 0.4855, "roc_auc": 0.9560, "saved_checkpoint": true},
+    {"epoch": 4, "accuracy": 0.9949, "precision": 0.2333, "recall": 0.8571, "f1": 0.3668, "roc_auc": 0.9637, "saved_checkpoint": false},
+    {"epoch": 5, "accuracy": 0.9988, "precision": 0.6212, "recall": 0.8367, "f1": 0.7130, "roc_auc": 0.9590, "saved_checkpoint": true},
+    {"epoch": 6, "accuracy": 0.9988, "precision": 0.6029, "recall": 0.8367, "f1": 0.7009, "roc_auc": 0.9583, "saved_checkpoint": false},
+    {"epoch": 7, "accuracy": 0.9974, "precision": 0.3853, "recall": 0.8571, "f1": 0.5316, "roc_auc": 0.9607, "saved_checkpoint": false},
+    {"epoch": 8, "accuracy": 0.9949, "precision": 0.2350, "recall": 0.8776, "f1": 0.3707, "roc_auc": 0.9611, "saved_checkpoint": false},
+    {"epoch": 9, "accuracy": 0.9989, "precision": 0.6406, "recall": 0.8367, "f1": 0.7257, "roc_auc": 0.9572, "saved_checkpoint": true},
+    {"epoch": 10, "accuracy": 0.9968, "precision": 0.3280, "recall": 0.8367, "f1": 0.4713, "roc_auc": 0.9610, "saved_checkpoint": false}
+  ],
+  "best_checkpoint": {
+    "epoch": 9,
+    "validation_f1": 0.7257
+  },
+  "test_metrics": {
+    "accuracy": 0.9988,
+    "precision": 0.6212,
+    "recall": 0.8367,
+    "f1": 0.7130,
+    "roc_auc": 0.9473
+  },
+  "source_notebook": "notebook.ipynb (colab run)",
+  "extracted_by": "notebook cell outputs and widget state",
+  "known_protocol_notes": [
+    "Train/validation/test split is random and stratified by class, not chronological.",
+    "BorderlineSMOTE is applied to the training partition only.",
+    "Pretraining sliding windows are built from the full scaled dataset prior to the train/validation/test split.",
+    "Fine-tuning classification uses forward_classify_from_flat, which treats each transaction as a length-1 sequence."
+  ]
+}

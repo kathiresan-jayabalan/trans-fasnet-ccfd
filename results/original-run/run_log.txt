@@ -1,0 +1,56 @@
+TransFASNet - Executed Run Log
+Source: Colab notebook, executed run
+Protocol: random stratified 80/10/10 split, BorderlineSMOTE on training partition,
+          pretraining windows built from the full scaled dataset before splitting
+Seed: 42
+Sequence length: 8
+Batch size (pretrain): 512
+Batch size (fine-tune): 256
+Pretrain epochs: 10
+Fine-tune epochs: 10
+Learning rate (pretrain): 3e-4
+Learning rate (fine-tune): 1e-4
+Contrastive temperature: 0.1
+
+=== Pretraining ===
+Number of pretraining windows: 284800
+Pretrain Epoch 1/10: 556/556 batches — pretrain loss: 4.585835
+Pretrain Epoch 2/10: 556/556 batches — pretrain loss: 3.969964
+Pretrain Epoch 3/10: 556/556 batches — pretrain loss: 2.715191
+Pretrain Epoch 4/10: 556/556 batches — pretrain loss: 2.165113
+Pretrain Epoch 5/10: 556/556 batches — pretrain loss: 1.876932
+Pretrain Epoch 6/10: 556/556 batches — pretrain loss: 1.689963
+Pretrain Epoch 7/10: 556/556 batches — pretrain loss: 1.607046
+Pretrain Epoch 8/10: 556/556 batches — pretrain loss: 1.544997
+Pretrain Epoch 9/10: 556/556 batches — pretrain loss: 1.490867
+Pretrain Epoch 10/10: 556/556 batches — pretrain loss: 1.446875
+Pretraining complete.
+
+=== Fine-tuning ===
+Fine-tune Epoch 1/10 (1777 batches): Val acc=0.9900 prec=0.1308 rec=0.8571 f1=0.2270 roc=0.9659 — Saved best model.
+Fine-tune Epoch 2/10 (1777 batches): Val acc=0.9928 prec=0.1777 rec=0.8776 f1=0.2955 roc=0.9648 — Saved best model.
+Fine-tune Epoch 3/10 (1777 batches): Val acc=0.9969 prec=0.3387 rec=0.8571 f1=0.4855 roc=0.9560 — Saved best model.
+Fine-tune Epoch 4/10 (1777 batches): Val acc=0.9949 prec=0.2333 rec=0.8571 f1=0.3668 roc=0.9637
+Fine-tune Epoch 5/10 (1777 batches): Val acc=0.9988 prec=0.6212 rec=0.8367 f1=0.7130 roc=0.9590 — Saved best model.
+Fine-tune Epoch 6/10 (1777 batches): Val acc=0.9988 prec=0.6029 rec=0.8367 f1=0.7009 roc=0.9583
+Fine-tune Epoch 7/10 (1777 batches): Val acc=0.9974 prec=0.3853 rec=0.8571 f1=0.5316 roc=0.9607
+Fine-tune Epoch 8/10 (1777 batches): Val acc=0.9949 prec=0.2350 rec=0.8776 f1=0.3707 roc=0.9611
+Fine-tune Epoch 9/10 (1777 batches): Val acc=0.9989 prec=0.6406 rec=0.8367 f1=0.7257 roc=0.9572 — Saved best model.
+Fine-tune Epoch 10/10 (1777 batches): Val acc=0.9968 prec=0.3280 rec=0.8367 f1=0.4713 roc=0.9610
+Fine-tuning complete.
+
+Best checkpoint: epoch 9 (validation F1 = 0.7257)
+
+=== Test Results (best checkpoint, epoch 9) ===
+Accuracy:  0.9988
+Precision: 0.6212
+Recall:    0.8367
+F1:        0.7130
+ROC AUC:   0.9473
+
+Note: the reported test metrics were produced by loading the checkpoint saved
+at the point of highest validation F1 (epoch 9) and evaluating once on the
+held-out test partition. The overlap between certain test and validation
+values across epochs (e.g., recall repeatedly at 0.8367) reflects the very
+small number of fraud cases in each partition, which produces a limited set
+of achievable precision/recall ratios rather than a data-processing error.
