@@ -102,6 +102,18 @@ The suite covers chronological splitting and scaling, window and forecasting-tar
 ## Output
 Training writes outputs/best_model.pt and outputs/training_summary.json. Evaluation writes test_metrics.json with precision, recall, F1, average precision, ROC-AUC, and a confusion matrix for the fraud class.
 
+## Results
+
+See [`results/README.md`](results/README.md) for the full training log, structured metrics, and executed notebook from the original protocol run:
+
+| Metric | Value |
+|---|---|
+| Accuracy | 0.9988 |
+| Precision | 0.6212 |
+| Recall | 0.8367 |
+| F1 | 0.7130 |
+| ROC AUC | 0.9473 |
+
 ## Status
 This is a baseline implementation. It does not include spatial-feature attention or gated fusion. Those components are implemented in separate repositories:
 - STTN-CP: https://github.com/kathiresan-jayabalan/sttn-cp-ccfd
