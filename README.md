@@ -103,8 +103,7 @@ The suite covers chronological splitting and scaling, window and forecasting-tar
 Training writes outputs/best_model.pt and outputs/training_summary.json. Evaluation writes test_metrics.json with precision, recall, F1, average precision, ROC-AUC, and a confusion matrix for the fraud class.
 
 ## Results
-
-See [`results/README.md`](results/README.md) for the full training log, structured metrics, and executed notebook from the original protocol run:
+See [`results/README.md`](results/README.md) for the full training log, structured metrics, and executed notebook from the protocol run: 10 pretraining epochs (556 batches each, loss dropping from 4.585835 to 1.446875), 10 fine-tuning epochs (1,777 batches each) with per-epoch validation accuracy/precision/recall/F1/ROC-AUC, the checkpoint-save events and the final test block. Same way, hyperparameters (batch sizes 512/256, learning rates 3e-4/1e-4, seed 42, sequence length 8), per-epoch arrays for both pretraining loss and fine-tuning validation metrics, the best-checkpoint marker (epoch 9, F1 0.7257) and the final test metrics as shown below:
 
 | Metric | Value |
 |---|---|
