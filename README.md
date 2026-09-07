@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22635291.svg)](https://doi.org/10.5281/zenodo.22635291)
+
 # TransFASNet for Credit Card Fraud Detection (trans-fasnet-ccfd)
 
 This repository contains a baseline implementation of TransFASNet for binary credit card fraud classification.
