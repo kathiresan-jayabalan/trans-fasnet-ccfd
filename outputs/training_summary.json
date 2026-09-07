@@ -4,11 +4,12 @@
   "device": null,
   "seed": null,
   "sequence_length": null,
-  "train_windows": null,
-  "validation_windows": null,
-  "train_fraud_windows": null,
-  "validation_fraud_windows": null,
+  "pretrain_epochs": null,
+  "finetune_epochs": null,
+  "batch_size_pretrain": null,
+  "batch_size_finetune": null,
+  "finetune_validation_by_epoch": null,
   "best_validation_f1": null,
-  "selected_threshold": null,
-  "checkpoint": "outputs/best_model.pt"
+  "test_metrics": null,
+  "checkpoint": "outputs/best_transfas_net.pth"
 }
